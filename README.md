@@ -1,6 +1,6 @@
-# beaver-ui
+# keeper-ui
 
-Project scaffold for apps that consume `@aviary-ui/core` and `@aviary-ui/ui`.
+Admin UI for managing **Apps**, **Divisions**, and **Users** — built on `@aviary-ui/core` and `@aviary-ui/ui`.
 
 Clone this repo, rename it, and build your app without touching the shared library.
 
@@ -51,6 +51,7 @@ make dev
 | `make test` | Run tests once |
 | `make test-watch` | Run tests in watch mode |
 | `make clean` | Remove `dist/` and `node_modules/` |
+| `make new name=my-app` | Scaffold a new project from this template |
 
 ---
 
@@ -70,11 +71,11 @@ make dev
 
 ```
 src/
-  api/           HTTP API modules (one file per resource)
+  api/           HTTP API modules (auth.js · apps.js · divisions.js · users.js)
   config/        nav.jsx — navigation items for AppLayout
-  hooks/         TanStack Query hooks (one file per resource)
+  hooks/         TanStack Query hooks (useApps.js · useDivisions.js · useUsers.js)
   infra/
-    config.js    App-specific env vars
+    config.js    App-specific env vars (appName, isDev)
     router/      React Router setup
   mocks/         MSW handlers, browser worker, Node server
   pages/         Route-level components
@@ -83,6 +84,8 @@ src/
   App.jsx        Provider stack
   main.jsx       Entry point — configure() + app mount
 ```
+
+UI primitives, auth guards, error boundary, notification system, and theme are all in `@aviary-ui/ui` and `@aviary-ui/core`.
 
 ---
 
@@ -127,17 +130,13 @@ Tests always use MSW via `src/mocks/server.js` regardless of this flag.
 ## Auth guards
 
 ```jsx
-import { PrivateRoute, RequireRole, RequirePermission } from '@aviary-ui/ui';
+import { PrivateRoute } from '@aviary-ui/ui';
 
 // Route-level
 <PrivateRoute><ProtectedPage /></PrivateRoute>
-
-// Component-level
-<RequireRole role="admin"><AdminPanel /></RequireRole>
-<RequirePermission permission="reports:export"><ExportButton /></RequirePermission>
 ```
 
-`user.role` and `user.permissions[]` come from `storage.getUser()` (set on login).
+`storage.getToken()` / `storage.getUser()` come from `@aviary-ui/core`.
 
 ---
 

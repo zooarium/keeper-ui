@@ -1,0 +1,6 @@
+/* Minimal overrides on top of Tabler */
+
+/* Ensure sidebar takes full height */
+.navbar-vertical.navbar-expand-lg {
+  min-height: 100vh;
+}

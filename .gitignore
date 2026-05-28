@@ -1,0 +1,16 @@
+logs
+*.log
+npm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+.npm-cache
+stats.html

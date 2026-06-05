@@ -1,7 +1,6 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { PrivateRoute, Spinner } from '@aviary-ui/ui';
-import { storage } from '@aviary-ui/core';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { PrivateRoute, RootRedirect, Spinner } from '@aviary-ui/ui';
 
 const LoginPage = lazy(() => import('../../pages/LoginPage'));
 const DashboardPage = lazy(() => import('../../pages/DashboardPage'));
@@ -48,7 +47,7 @@ export default function AppRouter() {
           />
           <Route
             path="/"
-            element={<Navigate to={storage.getToken() ? '/dashboard' : '/login'} replace />}
+            element={<RootRedirect />}
           />
         </Routes>
       </Suspense>

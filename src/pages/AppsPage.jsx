@@ -88,7 +88,10 @@ export default function AppsPage() {
   const handleSave = async (e) => {
     e.preventDefault();
     const errs = validate(formData);
-    if (Object.keys(errs).length > 0) { setFormErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setFormErrors(errs);
+      return;
+    }
     setSaving(true);
     try {
       await create({ name: formData.name.trim(), status: formData.status });
@@ -150,11 +153,15 @@ export default function AppsPage() {
           ) : error ? (
             <div className="p-4 text-center">
               <p className="text-danger mb-3">{error}</p>
-              <Button variant="outline-danger" onClick={refetch}>Retry</Button>
+              <Button variant="outline-danger" onClick={refetch}>
+                Retry
+              </Button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-5 text-center text-secondary">
-              <p className="mb-3">{apps.length === 0 ? 'No apps yet.' : 'No apps match filters.'}</p>
+              <p className="mb-3">
+                {apps.length === 0 ? 'No apps yet.' : 'No apps match filters.'}
+              </p>
               {apps.length === 0 && <Button onClick={openAdd}>Add first app</Button>}
             </div>
           ) : (
@@ -216,7 +223,9 @@ export default function AppsPage() {
                     </li>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                       <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
-                        <button className="page-link" onClick={() => setPage(p)}>{p}</button>
+                        <button className="page-link" onClick={() => setPage(p)}>
+                          {p}
+                        </button>
                       </li>
                     ))}
                     <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
@@ -253,8 +262,12 @@ export default function AppsPage() {
             </Select>
           </FormField>
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" type="button" onClick={closeModal}>Cancel</Button>
-            <Button type="submit" loading={saving}>{saving ? 'Saving…' : 'Create'}</Button>
+            <Button variant="secondary" type="button" onClick={closeModal}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={saving}>
+              {saving ? 'Saving…' : 'Create'}
+            </Button>
           </div>
         </form>
       </Modal>

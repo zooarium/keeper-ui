@@ -7,7 +7,13 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'analyze' &&
-      visualizer({ filename: 'stats.html', open: false, gzipSize: true, brotliSize: true, template: 'treemap' }),
+      visualizer({
+        filename: 'stats.html',
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+        template: 'treemap',
+      }),
   ].filter(Boolean),
   resolve: {
     alias: {

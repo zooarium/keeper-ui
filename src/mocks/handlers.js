@@ -43,4 +43,40 @@ export const handlers = [
   }),
 
   http.delete('*/things/:id', () => new HttpResponse(null, { status: 204 })),
+
+  // --- Guest Keys ---
+  http.get('*/guest-keys', () =>
+    HttpResponse.json({
+      data: [
+        {
+          id: 1,
+          app_id: 1,
+          division_id: 1,
+          user_id: 1,
+          name: 'Public site key',
+          site_key: 'kpr_guest_key_abc123',
+          status: 1,
+          created_at: '2026-01-01T00:00:00Z',
+          updated_at: '2026-01-01T00:00:00Z',
+        },
+      ],
+    })
+  ),
+
+  http.post('*/guest-keys', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json(
+      { data: { id: Date.now(), site_key: 'kpr_guest_key_new', status: 1, ...body } },
+      { status: 201 }
+    );
+  }),
+
+  http.put('*/guest-keys/:id', async ({ params, request }) => {
+    const body = await request.json();
+    return HttpResponse.json({ data: { id: Number(params.id), ...body } });
+  }),
+
+  http.delete('*/guest-keys/:id', ({ params }) =>
+    HttpResponse.json({ data: { id: Number(params.id) } })
+  ),
 ];

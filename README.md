@@ -38,32 +38,32 @@ make dev
 
 ## Available commands
 
-| Command | Description |
-|---------|-------------|
-| `make install` | Install dependencies |
-| `make update` | Update all npm packages |
-| `make dev` | Start Vite dev server |
-| `make build` | Build for production |
-| `make analyze` | Build + open bundle treemap (`stats.html`) |
-| `make lint` | Run ESLint |
-| `make lint-fix` | Run ESLint with auto-fix |
-| `make format` | Format with Prettier |
-| `make test` | Run tests once |
-| `make test-watch` | Run tests in watch mode |
-| `make clean` | Remove `dist/` and `node_modules/` |
-| `make new name=my-app` | Scaffold a new project from this template |
+| Command                | Description                                |
+| ---------------------- | ------------------------------------------ |
+| `make install`         | Install dependencies                       |
+| `make update`          | Update all npm packages                    |
+| `make dev`             | Start Vite dev server                      |
+| `make build`           | Build for production                       |
+| `make analyze`         | Build + open bundle treemap (`stats.html`) |
+| `make lint`            | Run ESLint                                 |
+| `make lint-fix`        | Run ESLint with auto-fix                   |
+| `make format`          | Format with Prettier                       |
+| `make test`            | Run tests once                             |
+| `make test-watch`      | Run tests in watch mode                    |
+| `make clean`           | Remove `dist/` and `node_modules/`         |
+| `make new name=my-app` | Scaffold a new project from this template  |
 
 ---
 
 ## Environment variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_APP_NAME` | No | App display name (default: `App`) |
-| `VITE_API_URL` | Yes | Auth service base URL |
-| `VITE_API_BE_URL` | Yes | Main API base URL |
-| `VITE_REFRESH_PATH` | No | Token refresh path (default: `/users/refresh`) |
-| `VITE_MOCK_API` | No | Set `true` to use MSW mock API in dev |
+| Variable            | Required | Description                                    |
+| ------------------- | -------- | ---------------------------------------------- |
+| `VITE_APP_NAME`     | No       | App display name (default: `App`)              |
+| `VITE_API_URL`      | Yes      | Auth service base URL                          |
+| `VITE_API_BE_URL`   | Yes      | Main API base URL                              |
+| `VITE_REFRESH_PATH` | No       | Token refresh path (default: `/users/refresh`) |
+| `VITE_MOCK_API`     | No       | Set `true` to use MSW mock API in dev          |
 
 ---
 
@@ -110,6 +110,7 @@ Create `src/pages/FooPage.jsx`, wrap with `<AppLayout navItems={NAV_ITEMS} appNa
 ### 5. Route
 
 In `src/infra/router/index.jsx`:
+
 - Lazy-import the page
 - Add a `<Route>` inside `<PrivateRoute>` (or bare, for public pages)
 
@@ -133,7 +134,9 @@ Tests always use MSW via `src/mocks/server.js` regardless of this flag.
 import { PrivateRoute } from '@aviary-ui/ui';
 
 // Route-level
-<PrivateRoute><ProtectedPage /></PrivateRoute>
+<PrivateRoute>
+  <ProtectedPage />
+</PrivateRoute>;
 ```
 
 `storage.getToken()` / `storage.getUser()` come from `@aviary-ui/core`.

@@ -1,54 +1,54 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNotification } from '@aviary-ui/ui';
-import { fetchDivisions, createDivision, updateDivision, deleteDivision } from '@/api/divisions';
+import { fetchGuestKeys, createGuestKey, updateGuestKey, deleteGuestKey } from '@/api/guestKeys';
 
-export const DIVISIONS_KEY = 'divisions';
+export const GUEST_KEYS_KEY = 'guest-keys';
 
-export function useDivisions(appId) {
+export function useGuestKeys(appId) {
   const queryClient = useQueryClient();
   const { showNotification } = useNotification();
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [DIVISIONS_KEY],
-    queryFn: fetchDivisions,
+    queryKey: [GUEST_KEYS_KEY],
+    queryFn: fetchGuestKeys,
     select: (res) => {
       const all = res.data ?? [];
-      return appId != null ? all.filter((d) => d.app_id === appId) : all;
+      return appId != null ? all.filter((k) => k.app_id === appId) : all;
     },
   });
 
-  const divisions = data ?? [];
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: [DIVISIONS_KEY] });
+  const guestKeys = data ?? [];
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: [GUEST_KEYS_KEY] });
 
   const createMutation = useMutation({
-    mutationFn: (payload) => createDivision(payload),
+    mutationFn: (payload) => createGuestKey(payload),
     onSuccess: () => {
       invalidate();
-      showNotification('Division created!', 'success');
+      showNotification('Guest key created!', 'success');
     },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateDivision(id, payload),
+    mutationFn: ({ id, payload }) => updateGuestKey(id, payload),
     onSuccess: () => {
       invalidate();
-      showNotification('Division updated!', 'success');
+      showNotification('Guest key updated!', 'success');
     },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   const removeMutation = useMutation({
-    mutationFn: (id) => deleteDivision(id),
+    mutationFn: (id) => deleteGuestKey(id),
     onSuccess: () => {
       invalidate();
-      showNotification('Division deleted!', 'success');
+      showNotification('Guest key deleted!', 'success');
     },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   return {
-    divisions,
+    guestKeys,
     isLoading,
     error: error?.message ?? null,
     refetch,

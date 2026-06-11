@@ -8,18 +8,18 @@ Keeper-UI is a React-based **admin interface** for managing **Apps**, **Division
 
 ## 🛠️ Tech Stack
 
-| Layer | Library |
-|-------|---------|
-| UI framework | React 19 (functional components + hooks) |
-| CSS | **Tabler CSS 1.2** (Bootstrap-based — use Bootstrap utility classes) |
-| Icons | `@tabler/icons-react` (re-exported from `@aviary-ui/ui`) |
-| Dialogs | `@radix-ui/react-dialog`, `@radix-ui/react-alert-dialog` (via `@aviary-ui/ui`) |
-| Routing | React Router DOM v7 |
-| Server state | **TanStack Query v5** (`@tanstack/react-query`) |
-| Forms | Manual local state + validation (pages) or RHF+Zod for new forms |
-| Mocking | **MSW v2** (tests + optional dev mode) |
-| Build | Vite 7 |
-| Testing | Vitest + Testing Library |
+| Layer        | Library                                                                        |
+| ------------ | ------------------------------------------------------------------------------ |
+| UI framework | React 19 (functional components + hooks)                                       |
+| CSS          | **Tabler CSS 1.2** (Bootstrap-based — use Bootstrap utility classes)           |
+| Icons        | `@tabler/icons-react` (re-exported from `@aviary-ui/ui`)                       |
+| Dialogs      | `@radix-ui/react-dialog`, `@radix-ui/react-alert-dialog` (via `@aviary-ui/ui`) |
+| Routing      | React Router DOM v7                                                            |
+| Server state | **TanStack Query v5** (`@tanstack/react-query`)                                |
+| Forms        | Manual local state + validation (pages) or RHF+Zod for new forms               |
+| Mocking      | **MSW v2** (tests + optional dev mode)                                         |
+| Build        | Vite 7                                                                         |
+| Testing      | Vitest + Testing Library                                                       |
 
 > **No Tailwind.** Use Tabler/Bootstrap utility classes (`d-flex`, `gap-2`, `text-secondary`, `min-vh-100`, etc.).
 
@@ -50,13 +50,28 @@ UI primitives (`Button`, `Card`, `Modal`, etc.), auth guards, error boundary, no
 ```js
 import {
   AppLayout,
-  Button, Card, CardHeader, CardTitle, CardBody,
-  Badge, Spinner, FormField, Input, Select,
-  Modal, ConfirmDialog,
-  IconPlus, IconEdit, IconTrash, IconEye, IconArrowLeft,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  Badge,
+  Spinner,
+  FormField,
+  Input,
+  Select,
+  Modal,
+  ConfirmDialog,
+  IconPlus,
+  IconEdit,
+  IconTrash,
+  IconEye,
+  IconArrowLeft,
   useNotification,
   PrivateRoute,
-  ErrorBoundary, ThemeProvider, NotificationProvider,
+  ErrorBoundary,
+  ThemeProvider,
+  NotificationProvider,
 } from '@aviary-ui/ui';
 ```
 
@@ -71,20 +86,20 @@ import { apiRequest, configure, storage } from '@aviary-ui/core';
 `@/` maps to `src/`. Use in all new files.
 
 ```js
-import { useApps }    from '@/hooks/useApps';
-import { config }     from '@/infra/config';
-import { NAV_ITEMS }  from '@/config/nav';
+import { useApps } from '@/hooks/useApps';
+import { config } from '@/infra/config';
+import { NAV_ITEMS } from '@/config/nav';
 ```
 
 ## 🗺️ Routes
 
-| Path | Page | Guard |
-|------|------|-------|
-| `/login` | `LoginPage` | — |
-| `/dashboard` | `DashboardPage` | `PrivateRoute` |
-| `/apps` | `AppsPage` | `PrivateRoute` |
-| `/apps/:id` | `AppDetailsPage` | `PrivateRoute` |
-| `/` | redirect → `/dashboard` or `/login` | — |
+| Path         | Page                                | Guard          |
+| ------------ | ----------------------------------- | -------------- |
+| `/login`     | `LoginPage`                         | —              |
+| `/dashboard` | `DashboardPage`                     | `PrivateRoute` |
+| `/apps`      | `AppsPage`                          | `PrivateRoute` |
+| `/apps/:id`  | `AppDetailsPage`                    | `PrivateRoute` |
+| `/`          | redirect → `/dashboard` or `/login` | —              |
 
 ## 🌐 HTTP Layer
 
@@ -104,6 +119,7 @@ configure({
 ## 🔑 Auth Storage
 
 `storage` from `@aviary-ui/core`:
+
 - `storage.getToken()` / `setToken()` — access token.
 - `storage.getRefreshToken()` / `setRefreshToken()` — refresh token.
 - `storage.getUser()` / `setUser()` — parsed user object.
@@ -114,7 +130,9 @@ configure({
 ```jsx
 import { PrivateRoute } from '@aviary-ui/ui';
 
-<PrivateRoute><Dashboard /></PrivateRoute>
+<PrivateRoute>
+  <Dashboard />
+</PrivateRoute>;
 ```
 
 No `PublicRoute` guard on login — it is a bare route.
@@ -170,7 +188,11 @@ const schema = z.object({
   status: z.coerce.number(),
 });
 
-const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+const {
+  register,
+  handleSubmit,
+  formState: { errors, isSubmitting },
+} = useForm({
   resolver: zodResolver(schema),
   defaultValues: { name: '', status: 1 },
 });
@@ -191,12 +213,11 @@ Show field errors via `<FormField error={errors.field?.message}>`.
 import { http, HttpResponse } from 'msw';
 import { server } from '@/mocks/server';
 
-server.use(
-  http.get('*/apps', () => HttpResponse.json({ data: [] }))
-);
+server.use(http.get('*/apps', () => HttpResponse.json({ data: [] })));
 ```
 
 **Hook tests** — wrap with QueryClient + NotificationProvider:
+
 ```jsx
 function makeWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -230,19 +251,23 @@ Light/dark toggle via `ThemeProvider` from `@aviary-ui/ui`. `data-bs-theme` attr
 ## 🚀 Common Tasks
 
 ### Add a new page
+
 1. Create `src/pages/NewPage.jsx`, wrap with `<AppLayout navItems={NAV_ITEMS} appName="Keeper">`.
 2. Lazy-import in `src/infra/router/index.jsx`.
 3. Add `<Route>` (wrap in `<PrivateRoute>` if auth-required).
 4. Add nav link in `src/config/nav.jsx`.
 
 ### Add a new API module
+
 1. Create `src/api/foo.js` using `apiRequest` from `@aviary-ui/core`.
 2. Create `src/hooks/useFoo.js` using `useQuery` / `useMutation`.
 3. Export a `FOO_KEY` constant from the hook file.
 4. Add mock handlers to `src/mocks/handlers.js`.
 
 ### Add role-gated UI
+
 Available from `@aviary-ui/ui` if needed:
+
 ```jsx
 import { RequireRole, RequirePermission } from '@aviary-ui/ui';
 <RequireRole role="admin"><AdminButton /></RequireRole>
@@ -250,9 +275,11 @@ import { RequireRole, RequirePermission } from '@aviary-ui/ui';
 ```
 
 ### Add a new form
+
 Use RHF + Zod for new forms. Define schema → `useForm({ resolver: zodResolver(schema) })` → `register` inputs → `handleSubmit`. See `LoginPage.jsx` as reference.
 
 ### Data model relationships
+
 ```
 App
  └── Division (has app_id, path, depth — hierarchical)

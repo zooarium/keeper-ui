@@ -22,19 +22,28 @@ export function useUsers(appId) {
 
   const createMutation = useMutation({
     mutationFn: (payload) => createUser(payload),
-    onSuccess: () => { invalidate(); showNotification('User created!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('User created!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => updateUser(id, payload),
-    onSuccess: () => { invalidate(); showNotification('User updated!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('User updated!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   const removeMutation = useMutation({
     mutationFn: (id) => deleteUser(id),
-    onSuccess: () => { invalidate(); showNotification('User deleted!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('User deleted!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 

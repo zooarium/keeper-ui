@@ -23,6 +23,7 @@ import {
 import { useApp, APPS_KEY } from '@/hooks/useApps';
 import { useDivisions } from '@/hooks/useDivisions';
 import { useUsers } from '@/hooks/useUsers';
+import { useGuestKeys } from '@/hooks/useGuestKeys';
 import { NAV_ITEMS } from '@/config/nav';
 
 const SECTION_PAGE_SIZE = 10;
@@ -75,7 +76,10 @@ function DivisionModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate(form);
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
     setSaving(true);
     try {
       await onSave(form);
@@ -108,8 +112,12 @@ function DivisionModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) 
           </FormField>
         )}
         <div className="d-flex justify-content-end gap-2">
-          <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-          <Button type="submit" loading={saving}>{saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}</Button>
+          <Button variant="secondary" type="button" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}
+          </Button>
         </div>
       </form>
     </Modal>
@@ -178,7 +186,10 @@ function UserModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate(form);
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
     setSaving(true);
     try {
       const payload = { ...form };
@@ -241,10 +252,17 @@ function UserModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) {
           />
         </FormField>
         <FormField label="Division" htmlFor="division_id" error={errors.division_id}>
-          <Select id="division_id" value={form.division_id} onChange={change} error={errors.division_id}>
+          <Select
+            id="division_id"
+            value={form.division_id}
+            onChange={change}
+            error={errors.division_id}
+          >
             <option value="">Select division</option>
             {divisions.map((d) => (
-              <option key={d.id} value={d.id}>{d.name}</option>
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
             ))}
           </Select>
         </FormField>
@@ -263,8 +281,12 @@ function UserModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) {
           </FormField>
         )}
         <div className="d-flex justify-content-end gap-2">
-          <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-          <Button type="submit" loading={saving}>{saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}</Button>
+          <Button variant="secondary" type="button" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}
+          </Button>
         </div>
       </form>
     </Modal>
@@ -280,7 +302,11 @@ function DivisionsSection({ appId }) {
   const [nameFilter, setNameFilter] = useState('');
   const [visible, setVisible] = useState(SECTION_PAGE_SIZE);
   const [modalState, setModalState] = useState({ isOpen: false, isEdit: false, item: null });
-  const [confirmState, setConfirmState] = useState({ isOpen: false, message: '', onConfirm: () => {} });
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const filtered = divisions.filter(
     (d) => !nameFilter || d.name.toLowerCase().includes(nameFilter.toLowerCase())
@@ -331,7 +357,10 @@ function DivisionsSection({ appId }) {
               type="text"
               placeholder="Filter by name…"
               value={nameFilter}
-              onChange={(e) => { setNameFilter(e.target.value); setVisible(SECTION_PAGE_SIZE); }}
+              onChange={(e) => {
+                setNameFilter(e.target.value);
+                setVisible(SECTION_PAGE_SIZE);
+              }}
               style={{ width: 200 }}
             />
             <Button size="sm" onClick={openAdd} className="d-flex align-items-center gap-1">
@@ -346,7 +375,9 @@ function DivisionsSection({ appId }) {
           ) : error ? (
             <div className="p-4 text-center">
               <p className="text-danger mb-3">{error}</p>
-              <Button variant="outline-danger" onClick={refetch}>Retry</Button>
+              <Button variant="outline-danger" onClick={refetch}>
+                Retry
+              </Button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-4 text-center text-secondary">
@@ -407,7 +438,11 @@ function DivisionsSection({ appId }) {
               </table>
               {hasMore && (
                 <div className="card-footer text-center">
-                  <Button variant="outline-secondary" size="sm" onClick={() => setVisible((v) => v + SECTION_PAGE_SIZE)}>
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => setVisible((v) => v + SECTION_PAGE_SIZE)}
+                  >
                     Load more ({filtered.length - visible} remaining)
                   </Button>
                 </div>
@@ -421,7 +456,9 @@ function DivisionsSection({ appId }) {
         isOpen={modalState.isOpen}
         onClose={closeModal}
         onSave={handleSave}
-        initial={modalState.item ? { name: modalState.item.name, status: modalState.item.status } : null}
+        initial={
+          modalState.item ? { name: modalState.item.name, status: modalState.item.status } : null
+        }
         isEdit={modalState.isEdit}
         divisions={divisions}
       />
@@ -446,7 +483,11 @@ function UsersSection({ appId }) {
   const [nameFilter, setNameFilter] = useState('');
   const [visible, setVisible] = useState(SECTION_PAGE_SIZE);
   const [modalState, setModalState] = useState({ isOpen: false, isEdit: false, item: null });
-  const [confirmState, setConfirmState] = useState({ isOpen: false, message: '', onConfirm: () => {} });
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const filtered = users.filter((u) => {
     if (!nameFilter) return true;
@@ -515,7 +556,10 @@ function UsersSection({ appId }) {
               type="text"
               placeholder="Filter by name / email…"
               value={nameFilter}
-              onChange={(e) => { setNameFilter(e.target.value); setVisible(SECTION_PAGE_SIZE); }}
+              onChange={(e) => {
+                setNameFilter(e.target.value);
+                setVisible(SECTION_PAGE_SIZE);
+              }}
               style={{ width: 220 }}
             />
             <Button size="sm" onClick={openAdd} className="d-flex align-items-center gap-1">
@@ -530,7 +574,9 @@ function UsersSection({ appId }) {
           ) : error ? (
             <div className="p-4 text-center">
               <p className="text-danger mb-3">{error}</p>
-              <Button variant="outline-danger" onClick={refetch}>Retry</Button>
+              <Button variant="outline-danger" onClick={refetch}>
+                Retry
+              </Button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-4 text-center text-secondary">
@@ -555,7 +601,9 @@ function UsersSection({ appId }) {
                   {shown.map((u) => (
                     <tr key={u.id}>
                       <td className="text-secondary">{u.id}</td>
-                      <td className="fw-medium">{u.firstname} {u.lastname}</td>
+                      <td className="fw-medium">
+                        {u.firstname} {u.lastname}
+                      </td>
                       <td className="text-secondary">{u.email}</td>
                       <td className="text-secondary">{u.division_name || '—'}</td>
                       <td>
@@ -597,7 +645,11 @@ function UsersSection({ appId }) {
               </table>
               {hasMore && (
                 <div className="card-footer text-center">
-                  <Button variant="outline-secondary" size="sm" onClick={() => setVisible((v) => v + SECTION_PAGE_SIZE)}>
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => setVisible((v) => v + SECTION_PAGE_SIZE)}
+                  >
                     Load more ({filtered.length - visible} remaining)
                   </Button>
                 </div>
@@ -614,6 +666,347 @@ function UsersSection({ appId }) {
         initial={modalState.item}
         isEdit={modalState.isEdit}
         divisions={divisions}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        message={confirmState.message}
+        onConfirm={confirmState.onConfirm}
+        onCancel={() => setConfirmState((p) => ({ ...p, isOpen: false }))}
+      />
+    </>
+  );
+}
+
+// ─── Guest Key Modal ────────────────────────────────────────────────────────────
+
+const EMPTY_GUESTKEY = { name: '', division_id: '', user_id: '', status: 1 };
+
+function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, users }) {
+  const [form, setForm] = useState(EMPTY_GUESTKEY);
+  const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
+  const firstRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setForm(
+        initial
+          ? {
+              name: initial.name ?? '',
+              division_id: initial.division_id ?? '',
+              user_id: initial.user_id ?? '',
+              status: initial.status ?? 1,
+            }
+          : EMPTY_GUESTKEY
+      );
+      setErrors({});
+    }
+  }, [isOpen, initial]);
+
+  useEffect(() => {
+    if (isOpen) firstRef.current?.focus();
+  }, [isOpen]);
+
+  const change = (e) => {
+    const { id, value } = e.target;
+    let val = value;
+    if (id === 'status' || id === 'division_id' || id === 'user_id') val = Number(value);
+    setForm((p) => ({ ...p, [id]: val }));
+    if (errors[id]) setErrors((p) => ({ ...p, [id]: null }));
+  };
+
+  const validate = (f) => {
+    const errs = {};
+    if (!f.name.trim()) errs.name = 'Name is required.';
+    if (!isEdit && !f.division_id) errs.division_id = 'Division is required.';
+    if (!isEdit && !f.user_id) errs.user_id = 'Guest user is required.';
+    return errs;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validate(form);
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Guest Key' : 'New Guest Key'}>
+      <form onSubmit={handleSubmit} noValidate>
+        <FormField label="Name" htmlFor="name" error={errors.name}>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Guest key name"
+            ref={firstRef}
+            error={errors.name}
+            value={form.name}
+            onChange={change}
+          />
+        </FormField>
+        {!isEdit && (
+          <>
+            <FormField label="Division" htmlFor="division_id" error={errors.division_id}>
+              <Select
+                id="division_id"
+                value={form.division_id}
+                onChange={change}
+                error={errors.division_id}
+              >
+                <option value="">Select division</option>
+                {divisions.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <FormField label="Guest User" htmlFor="user_id" error={errors.user_id}>
+              <Select id="user_id" value={form.user_id} onChange={change} error={errors.user_id}>
+                <option value="">Select user</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.firstname} {u.lastname} ({u.email})
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+          </>
+        )}
+        {isEdit && (
+          <FormField label="Status" htmlFor="status">
+            <Select id="status" value={form.status} onChange={change}>
+              <option value={1}>Active</option>
+              <option value={0}>Inactive</option>
+            </Select>
+          </FormField>
+        )}
+        <div className="d-flex justify-content-end gap-2">
+          <Button variant="secondary" type="button" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ─── Guest Keys Section ───────────────────────────────────────────────────────
+
+function GuestKeysSection({ appId }) {
+  const { showNotification } = useNotification();
+  const { guestKeys, isLoading, error, refetch, create, update, remove } = useGuestKeys(appId);
+  const { divisions } = useDivisions(appId);
+  const { users } = useUsers(appId);
+
+  const divName = (id) => divisions.find((d) => d.id === id)?.name || '—';
+  const userName = (id) => {
+    const u = users.find((x) => x.id === id);
+    return u ? `${u.firstname} ${u.lastname}` : '—';
+  };
+
+  const [nameFilter, setNameFilter] = useState('');
+  const [visible, setVisible] = useState(SECTION_PAGE_SIZE);
+  const [modalState, setModalState] = useState({ isOpen: false, isEdit: false, item: null });
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const filtered = guestKeys.filter(
+    (k) => !nameFilter || k.name.toLowerCase().includes(nameFilter.toLowerCase())
+  );
+  const shown = filtered.slice(0, visible);
+  const hasMore = visible < filtered.length;
+
+  const openAdd = () => setModalState({ isOpen: true, isEdit: false, item: null });
+  const openEdit = (item) => setModalState({ isOpen: true, isEdit: true, item });
+  const closeModal = () => setModalState({ isOpen: false, isEdit: false, item: null });
+
+  const copyKey = async (key) => {
+    try {
+      await navigator.clipboard.writeText(key);
+      showNotification('Site key copied!', 'success');
+    } catch {
+      showNotification('Copy failed.', 'error');
+    }
+  };
+
+  const handleSave = async (form) => {
+    try {
+      if (modalState.isEdit) {
+        await update(modalState.item.id, { name: form.name, status: form.status });
+      } else {
+        await create({
+          app_id: appId,
+          division_id: Number(form.division_id),
+          user_id: Number(form.user_id),
+          name: form.name,
+        });
+      }
+    } catch (err) {
+      showNotification(err.message, 'error');
+      throw err;
+    }
+  };
+
+  const requestDelete = (item) => {
+    setConfirmState({
+      isOpen: true,
+      message: `Delete (revoke) guest key "${item.name}"? This cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await remove(item.id);
+        } catch (err) {
+          showNotification(err.message, 'error');
+        } finally {
+          setConfirmState((p) => ({ ...p, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  return (
+    <>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Guest Keys</CardTitle>
+          <div className="card-options gap-2">
+            <Input
+              type="text"
+              placeholder="Filter by name…"
+              value={nameFilter}
+              onChange={(e) => {
+                setNameFilter(e.target.value);
+                setVisible(SECTION_PAGE_SIZE);
+              }}
+              style={{ width: 200 }}
+            />
+            <Button size="sm" onClick={openAdd} className="d-flex align-items-center gap-1">
+              <IconPlus size={14} />
+              Add
+            </Button>
+          </div>
+        </CardHeader>
+        <CardBody noPadding>
+          {isLoading ? (
+            <Spinner centered />
+          ) : error ? (
+            <div className="p-4 text-center">
+              <p className="text-danger mb-3">{error}</p>
+              <Button variant="outline-danger" onClick={refetch}>
+                Retry
+              </Button>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-4 text-center text-secondary">
+              {guestKeys.length === 0
+                ? 'No guest keys for this app.'
+                : 'No guest keys match filter.'}
+            </div>
+          ) : (
+            <>
+              <table className="table table-vcenter table-hover card-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Site Key</th>
+                    <th>Division</th>
+                    <th>Guest User</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th className="w-1" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {shown.map((k) => (
+                    <tr key={k.id}>
+                      <td className="text-secondary">{k.id}</td>
+                      <td className="fw-medium">{k.name}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-link p-0 text-secondary font-monospace small text-truncate"
+                          style={{ maxWidth: 180 }}
+                          title="Click to copy"
+                          onClick={() => copyKey(k.site_key)}
+                        >
+                          {k.site_key}
+                        </button>
+                      </td>
+                      <td className="text-secondary">{divName(k.division_id)}</td>
+                      <td className="text-secondary">{userName(k.user_id)}</td>
+                      <td>
+                        <Badge color={STATUS_COLOR[k.status] ?? 'secondary'}>
+                          {STATUS_LABEL[k.status] ?? k.status}
+                        </Badge>
+                      </td>
+                      <td className="text-secondary">{formatDateShort(k.created_at)}</td>
+                      <td>
+                        <div className="d-flex gap-1 justify-content-end">
+                          <Button
+                            variant="ghost-primary"
+                            size="sm"
+                            icon
+                            onClick={() => openEdit(k)}
+                            title="Edit"
+                          >
+                            <IconEdit size={15} />
+                          </Button>
+                          <Button
+                            variant="ghost-danger"
+                            size="sm"
+                            icon
+                            onClick={() => requestDelete(k)}
+                            title="Delete"
+                          >
+                            <IconTrash size={15} />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {hasMore && (
+                <div className="card-footer text-center">
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => setVisible((v) => v + SECTION_PAGE_SIZE)}
+                  >
+                    Load more ({filtered.length - visible} remaining)
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </CardBody>
+      </Card>
+
+      <GuestKeyModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        onSave={handleSave}
+        initial={modalState.item}
+        isEdit={modalState.isEdit}
+        divisions={divisions}
+        users={users}
       />
 
       <ConfirmDialog
@@ -662,7 +1055,10 @@ export default function AppDetailsPage() {
 
   const handleEditSave = async (e) => {
     e.preventDefault();
-    if (!editForm.name.trim()) { setEditErrors({ name: 'Name is required.' }); return; }
+    if (!editForm.name.trim()) {
+      setEditErrors({ name: 'Name is required.' });
+      return;
+    }
     setSaving(true);
     try {
       await update({ name: editForm.name.trim(), status: editForm.status });
@@ -691,7 +1087,13 @@ export default function AppDetailsPage() {
       <div className="page-header d-print-none mb-3">
         <div className="row align-items-center">
           <div className="col-auto">
-            <Button variant="ghost-secondary" size="sm" icon onClick={() => navigate('/apps')} title="Back to apps">
+            <Button
+              variant="ghost-secondary"
+              size="sm"
+              icon
+              onClick={() => navigate('/apps')}
+              title="Back to apps"
+            >
               <IconArrowLeft size={18} />
             </Button>
           </div>
@@ -711,7 +1113,13 @@ export default function AppDetailsPage() {
                 <IconEdit size={16} />
               </Button>
               {canDelete && (
-                <Button size="sm" variant="ghost-danger" icon onClick={() => setConfirmDelete(true)} title="Delete app">
+                <Button
+                  size="sm"
+                  variant="ghost-danger"
+                  icon
+                  onClick={() => setConfirmDelete(true)}
+                  title="Delete app"
+                >
                   <IconTrash size={16} />
                 </Button>
               )}
@@ -724,7 +1132,9 @@ export default function AppDetailsPage() {
           ) : error ? (
             <div className="text-center">
               <p className="text-danger mb-3">{error}</p>
-              <Button variant="outline-danger" onClick={refetch}>Retry</Button>
+              <Button variant="outline-danger" onClick={refetch}>
+                Retry
+              </Button>
             </div>
           ) : !app ? (
             <p className="text-secondary mb-0">App not found.</p>
@@ -762,6 +1172,7 @@ export default function AppDetailsPage() {
         <>
           <DivisionsSection appId={appId} />
           <UsersSection appId={appId} />
+          <GuestKeysSection appId={appId} />
         </>
       )}
 
@@ -785,8 +1196,12 @@ export default function AppDetailsPage() {
             </Select>
           </FormField>
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" type="button" onClick={() => setEditOpen(false)}>Cancel</Button>
-            <Button type="submit" loading={saving}>{saving ? 'Saving…' : 'Update'}</Button>
+            <Button variant="secondary" type="button" onClick={() => setEditOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={saving}>
+              {saving ? 'Saving…' : 'Update'}
+            </Button>
           </div>
         </form>
       </Modal>

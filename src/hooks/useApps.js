@@ -19,19 +19,28 @@ export function useApps() {
 
   const createMutation = useMutation({
     mutationFn: (payload) => createApp(payload),
-    onSuccess: () => { invalidate(); showNotification('App created!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('App created!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => updateApp(id, payload),
-    onSuccess: () => { invalidate(); showNotification('App updated!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('App updated!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
   const removeMutation = useMutation({
     mutationFn: (id) => deleteApp(id),
-    onSuccess: () => { invalidate(); showNotification('App deleted!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('App deleted!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 
@@ -64,7 +73,10 @@ export function useApp(id) {
 
   const updateMutation = useMutation({
     mutationFn: (payload) => updateApp(id, payload),
-    onSuccess: () => { invalidate(); showNotification('App updated!', 'success'); },
+    onSuccess: () => {
+      invalidate();
+      showNotification('App updated!', 'success');
+    },
     onError: (err) => showNotification(err.message, 'error'),
   });
 

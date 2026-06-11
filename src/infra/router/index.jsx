@@ -45,10 +45,7 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/"
-            element={<RootRedirect />}
-          />
+          <Route path="/" element={<RootRedirect />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

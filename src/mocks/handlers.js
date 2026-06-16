@@ -54,6 +54,7 @@ export const handlers = [
           division_id: 1,
           user_id: 1,
           name: 'Public site key',
+          domain: 'shop.acme.com',
           site_key: 'kpr_guest_key_abc123',
           status: 1,
           created_at: '2026-01-01T00:00:00Z',

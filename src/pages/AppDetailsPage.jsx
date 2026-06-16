@@ -680,7 +680,7 @@ function UsersSection({ appId }) {
 
 // ─── Guest Key Modal ────────────────────────────────────────────────────────────
 
-const EMPTY_GUESTKEY = { name: '', division_id: '', user_id: '', status: 1 };
+const EMPTY_GUESTKEY = { name: '', domain: '', division_id: '', user_id: '', status: 1 };
 
 function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, users }) {
   const [form, setForm] = useState(EMPTY_GUESTKEY);
@@ -694,6 +694,7 @@ function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, us
         initial
           ? {
               name: initial.name ?? '',
+              domain: initial.domain ?? '',
               division_id: initial.division_id ?? '',
               user_id: initial.user_id ?? '',
               status: initial.status ?? 1,
@@ -719,6 +720,7 @@ function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, us
   const validate = (f) => {
     const errs = {};
     if (!f.name.trim()) errs.name = 'Name is required.';
+    if (!isEdit && !f.domain.trim()) errs.domain = 'Domain is required.';
     if (!isEdit && !f.division_id) errs.division_id = 'Division is required.';
     if (!isEdit && !f.user_id) errs.user_id = 'Guest user is required.';
     return errs;
@@ -756,6 +758,19 @@ function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, us
         </FormField>
         {!isEdit && (
           <>
+            <FormField label="Domain" htmlFor="domain" error={errors.domain}>
+              <Input
+                id="domain"
+                type="text"
+                placeholder="shop.acme.com"
+                error={errors.domain}
+                value={form.domain}
+                onChange={change}
+              />
+              <small className="form-hint">
+                URL the public UI is served from. Normalized server-side and must be unique.
+              </small>
+            </FormField>
             <FormField label="Division" htmlFor="division_id" error={errors.division_id}>
               <Select
                 id="division_id"
@@ -784,12 +799,18 @@ function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, us
           </>
         )}
         {isEdit && (
-          <FormField label="Status" htmlFor="status">
-            <Select id="status" value={form.status} onChange={change}>
-              <option value={1}>Active</option>
-              <option value={0}>Inactive</option>
-            </Select>
-          </FormField>
+          <>
+            <FormField label="Domain" htmlFor="domain">
+              <Input id="domain" type="text" value={form.domain} disabled readOnly />
+              <small className="form-hint">Domain is immutable once created.</small>
+            </FormField>
+            <FormField label="Status" htmlFor="status">
+              <Select id="status" value={form.status} onChange={change}>
+                <option value={1}>Active</option>
+                <option value={0}>Inactive</option>
+              </Select>
+            </FormField>
+          </>
         )}
         <div className="d-flex justify-content-end gap-2">
           <Button variant="secondary" type="button" onClick={onClose}>
@@ -856,6 +877,7 @@ function GuestKeysSection({ appId }) {
           division_id: Number(form.division_id),
           user_id: Number(form.user_id),
           name: form.name,
+          domain: form.domain.trim(),
         });
       }
     } catch (err) {
@@ -925,6 +947,7 @@ function GuestKeysSection({ appId }) {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>Domain</th>
                     <th>Site Key</th>
                     <th>Division</th>
                     <th>Guest User</th>
@@ -938,6 +961,9 @@ function GuestKeysSection({ appId }) {
                     <tr key={k.id}>
                       <td className="text-secondary">{k.id}</td>
                       <td className="fw-medium">{k.name}</td>
+                      <td className="text-secondary text-truncate" style={{ maxWidth: 180 }}>
+                        {k.domain || '—'}
+                      </td>
                       <td>
                         <button
                           type="button"

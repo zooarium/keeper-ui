@@ -14,6 +14,9 @@ import {
   Select,
   Modal,
   ConfirmDialog,
+  SafeHtml,
+  SocialIcon,
+  socialLabel,
   IconPlus,
   IconEdit,
   IconTrash,
@@ -24,6 +27,7 @@ import { useApp, APPS_KEY } from '@/hooks/useApps';
 import { useDivisions } from '@/hooks/useDivisions';
 import { useUsers } from '@/hooks/useUsers';
 import { useGuestKeys } from '@/hooks/useGuestKeys';
+import AppForm from '@/components/AppForm';
 import { NAV_ITEMS } from '@/config/nav';
 
 const SECTION_PAGE_SIZE = 10;
@@ -1045,6 +1049,159 @@ function GuestKeysSection({ appId }) {
   );
 }
 
+// ─── App Overview (read-only display) ──────────────────────────────────────────
+
+function Field({ label, children, full }) {
+  return (
+    <div className={full ? 'col-12' : 'col-sm-6 col-md-4'}>
+      <div className="text-secondary small mb-1">{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function hasAny(obj) {
+  return obj && Object.values(obj).some((v) => v != null && String(v).trim() !== '');
+}
+
+function AppOverview({ app }) {
+  const about = app.about ?? {};
+  const contact = app.contact ?? {};
+  const address = contact.address ?? {};
+  const social = contact.social ?? {};
+  const socialEntries = Object.entries(social).filter(([, v]) => v && String(v).trim() !== '');
+
+  const addressLine = [
+    address.line1,
+    address.line2,
+    address.city,
+    address.state,
+    address.postal_code,
+    address.country,
+  ]
+    .filter((v) => v && String(v).trim() !== '')
+    .join(', ');
+
+  return (
+    <div className="d-flex flex-column gap-4">
+      {/* Basic */}
+      <div className="row g-3">
+        <Field label="ID">
+          <div className="fw-medium">{app.id}</div>
+        </Field>
+        <Field label="Name">
+          <div className="fw-medium">{app.name}</div>
+        </Field>
+        <Field label="Status">
+          <Badge color={STATUS_COLOR[app.status] ?? 'secondary'}>
+            {STATUS_LABEL[app.status] ?? app.status}
+          </Badge>
+        </Field>
+        {app.tagline && (
+          <Field label="Tagline">
+            <div>{app.tagline}</div>
+          </Field>
+        )}
+        {app.logo_url && (
+          <Field label="Logo">
+            <img
+              src={app.logo_url}
+              alt={`${app.name} logo`}
+              style={{ maxHeight: 40, maxWidth: 160, objectFit: 'contain' }}
+            />
+          </Field>
+        )}
+        <Field label="Created">
+          <div>{formatDate(app.created_at)}</div>
+        </Field>
+        <Field label="Updated">
+          <div>{formatDate(app.updated_at)}</div>
+        </Field>
+      </div>
+
+      {/* About */}
+      {(about.heading || about.body) && (
+        <div className="border-top pt-3">
+          <h4
+            className="text-secondary text-uppercase fw-bold mb-2"
+            style={{ fontSize: '0.75rem' }}
+          >
+            About
+          </h4>
+          {about.heading && <div className="fw-medium mb-2">{about.heading}</div>}
+          {about.body && <SafeHtml html={about.body} />}
+        </div>
+      )}
+
+      {/* Contact */}
+      {(hasAny({ ...contact, address: undefined, social: undefined }) || addressLine) && (
+        <div className="border-top pt-3">
+          <h4
+            className="text-secondary text-uppercase fw-bold mb-2"
+            style={{ fontSize: '0.75rem' }}
+          >
+            Contact
+          </h4>
+          <div className="row g-3">
+            {contact.email && (
+              <Field label="Email">
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              </Field>
+            )}
+            {contact.phone1 && (
+              <Field label="Phone 1">
+                <div>{contact.phone1}</div>
+              </Field>
+            )}
+            {contact.phone2 && (
+              <Field label="Phone 2">
+                <div>{contact.phone2}</div>
+              </Field>
+            )}
+            {contact.hours && (
+              <Field label="Business hours" full>
+                <div style={{ whiteSpace: 'pre-wrap' }}>{contact.hours}</div>
+              </Field>
+            )}
+            {addressLine && (
+              <Field label="Address" full>
+                <div>{addressLine}</div>
+              </Field>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Social */}
+      {socialEntries.length > 0 && (
+        <div className="border-top pt-3">
+          <h4
+            className="text-secondary text-uppercase fw-bold mb-2"
+            style={{ fontSize: '0.75rem' }}
+          >
+            Social media
+          </h4>
+          <div className="d-flex flex-wrap gap-3">
+            {socialEntries.map(([key, url]) => (
+              <a
+                key={key}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="d-flex align-items-center gap-1 text-decoration-none"
+                title={socialLabel(key)}
+              >
+                <SocialIcon platform={key} size={18} />
+                <span>{socialLabel(key)}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AppDetailsPage() {
@@ -1057,42 +1214,17 @@ export default function AppDetailsPage() {
   const { users } = useUsers(appId);
 
   const [editOpen, setEditOpen] = useState(false);
-  const [editForm, setEditForm] = useState({ name: '', status: 1 });
-  const [editErrors, setEditErrors] = useState({});
-  const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const editNameRef = useRef(null);
 
-  useEffect(() => {
-    if (editOpen) editNameRef.current?.focus();
-  }, [editOpen]);
+  const openEdit = () => setEditOpen(true);
 
-  const openEdit = () => {
-    setEditForm({ name: app.name, status: app.status });
-    setEditErrors({});
-    setEditOpen(true);
-  };
-
-  const handleEditChange = (e) => {
-    const { id: fid, value } = e.target;
-    setEditForm((p) => ({ ...p, [fid]: fid === 'status' ? Number(value) : value }));
-    if (editErrors[fid]) setEditErrors((p) => ({ ...p, [fid]: null }));
-  };
-
-  const handleEditSave = async (e) => {
-    e.preventDefault();
-    if (!editForm.name.trim()) {
-      setEditErrors({ name: 'Name is required.' });
-      return;
-    }
-    setSaving(true);
+  const handleEditSave = async (payload) => {
     try {
-      await update({ name: editForm.name.trim(), status: editForm.status });
+      await update(payload);
       setEditOpen(false);
     } catch (err) {
       showNotification(err.message, 'error');
-    } finally {
-      setSaving(false);
+      throw err;
     }
   };
 
@@ -1165,30 +1297,7 @@ export default function AppDetailsPage() {
           ) : !app ? (
             <p className="text-secondary mb-0">App not found.</p>
           ) : (
-            <div className="row g-3">
-              <div className="col-sm-6 col-md-4">
-                <div className="text-secondary small mb-1">ID</div>
-                <div className="fw-medium">{app.id}</div>
-              </div>
-              <div className="col-sm-6 col-md-4">
-                <div className="text-secondary small mb-1">Name</div>
-                <div className="fw-medium">{app.name}</div>
-              </div>
-              <div className="col-sm-6 col-md-4">
-                <div className="text-secondary small mb-1">Status</div>
-                <Badge color={STATUS_COLOR[app.status] ?? 'secondary'}>
-                  {STATUS_LABEL[app.status] ?? app.status}
-                </Badge>
-              </div>
-              <div className="col-sm-6 col-md-4">
-                <div className="text-secondary small mb-1">Created</div>
-                <div>{formatDate(app.created_at)}</div>
-              </div>
-              <div className="col-sm-6 col-md-4">
-                <div className="text-secondary small mb-1">Updated</div>
-                <div>{formatDate(app.updated_at)}</div>
-              </div>
-            </div>
+            <AppOverview app={app} />
           )}
         </CardBody>
       </Card>
@@ -1203,33 +1312,21 @@ export default function AppDetailsPage() {
       )}
 
       {/* Edit App Modal */}
-      <Modal isOpen={editOpen} onClose={() => setEditOpen(false)} title="Edit App">
-        <form onSubmit={handleEditSave} noValidate>
-          <FormField label="Name" htmlFor="name" error={editErrors.name}>
-            <Input
-              id="name"
-              type="text"
-              ref={editNameRef}
-              error={editErrors.name}
-              value={editForm.name}
-              onChange={handleEditChange}
-            />
-          </FormField>
-          <FormField label="Status" htmlFor="status">
-            <Select id="status" value={editForm.status} onChange={handleEditChange}>
-              <option value={1}>Active</option>
-              <option value={0}>Inactive</option>
-            </Select>
-          </FormField>
-          <div className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" type="button" onClick={() => setEditOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" loading={saving}>
-              {saving ? 'Saving…' : 'Update'}
-            </Button>
-          </div>
-        </form>
+      <Modal
+        isOpen={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Edit App"
+        size="lg"
+        scrollable
+      >
+        {app && (
+          <AppForm
+            mode="edit"
+            initial={app}
+            onSubmit={handleEditSave}
+            onCancel={() => setEditOpen(false)}
+          />
+        )}
       </Modal>
 
       {/* Delete App Confirmation */}

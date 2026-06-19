@@ -132,9 +132,7 @@ export default function AppsPage() {
               <p className="mb-3">
                 {apps.length === 0 ? 'No apps yet.' : 'No apps match filters.'}
               </p>
-              {apps.length === 0 && isSysAdmin && (
-                <Button onClick={openAdd}>Add first app</Button>
-              )}
+              {apps.length === 0 && isSysAdmin && <Button onClick={openAdd}>Add first app</Button>}
             </div>
           ) : (
             <>

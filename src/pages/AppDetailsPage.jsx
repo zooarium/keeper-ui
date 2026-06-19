@@ -44,9 +44,32 @@ function formatDateShort(d) {
   return d ? new Date(d).toLocaleDateString('en-GB') : '—';
 }
 
+// Build a division's full root→leaf name chain. Returns e.g. ["Headquarters", "Sales"].
+function divisionChain(id, divisions) {
+  const byId = new Map(divisions.map((d) => [d.id, d]));
+  const chain = [];
+  const seen = new Set();
+  let cur = byId.get(id);
+  while (cur && !seen.has(cur.id)) {
+    seen.add(cur.id);
+    chain.unshift(cur.name);
+    cur = cur.parent_id ? byId.get(cur.parent_id) : null;
+  }
+  return chain;
+}
+
+// "Sales (Headquarters)" — parens show ancestors only; plain name for roots.
+function divisionLabel(id, divisions, fallback = '—') {
+  const chain = divisionChain(id, divisions);
+  if (chain.length === 0) return fallback;
+  const name = chain[chain.length - 1];
+  const ancestors = chain.slice(0, -1);
+  return ancestors.length > 0 ? `${name} (${ancestors.join(' / ')})` : name;
+}
+
 // ─── Division Modal ───────────────────────────────────────────────────────────
 
-const EMPTY_DIV = { name: '', status: 1 };
+const EMPTY_DIV = { name: '', status: 1, parent_id: '' };
 
 function DivisionModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) {
   const [form, setForm] = useState(EMPTY_DIV);
@@ -65,9 +88,15 @@ function DivisionModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) 
     if (isOpen) firstRef.current?.focus();
   }, [isOpen]);
 
+  // Parent options: same-app divisions, excluding self (a division can't be its own parent).
+  const parentOptions = divisions.filter((d) => d.id !== initial?.id);
+
   const change = (e) => {
     const { id, value } = e.target;
-    setForm((p) => ({ ...p, [id]: id === 'status' ? Number(value) : value }));
+    let val = value;
+    if (id === 'status') val = Number(value);
+    else if (id === 'parent_id') val = value === '' ? '' : Number(value);
+    setForm((p) => ({ ...p, [id]: val }));
     if (errors[id]) setErrors((p) => ({ ...p, [id]: null }));
   };
 
@@ -106,6 +135,16 @@ function DivisionModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) 
             value={form.name}
             onChange={change}
           />
+        </FormField>
+        <FormField label="Parent" htmlFor="parent_id">
+          <Select id="parent_id" value={form.parent_id} onChange={change}>
+            <option value="">None (root)</option>
+            {parentOptions.map((d) => (
+              <option key={d.id} value={d.id}>
+                {divisionLabel(d.id, divisions)}
+              </option>
+            ))}
+          </Select>
         </FormField>
         {isEdit && (
           <FormField label="Status" htmlFor="status">
@@ -265,7 +304,7 @@ function UserModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) {
             <option value="">Select division</option>
             {divisions.map((d) => (
               <option key={d.id} value={d.id}>
-                {d.name}
+                {divisionLabel(d.id, divisions)}
               </option>
             ))}
           </Select>
@@ -301,7 +340,10 @@ function UserModal({ isOpen, onClose, onSave, initial, isEdit, divisions }) {
 
 function DivisionsSection({ appId }) {
   const { showNotification } = useNotification();
-  const { divisions, isLoading, error, refetch, create, update, remove } = useDivisions(appId);
+  const { divisions, isLoading, error, refetch, create, update, remove, move } =
+    useDivisions(appId);
+
+  const divName = (id) => divisions.find((d) => d.id === id)?.name || '—';
 
   const [nameFilter, setNameFilter] = useState('');
   const [visible, setVisible] = useState(SECTION_PAGE_SIZE);
@@ -323,11 +365,19 @@ function DivisionsSection({ appId }) {
   const closeModal = () => setModalState({ isOpen: false, isEdit: false, item: null });
 
   const handleSave = async (form) => {
+    const parentId = form.parent_id === '' ? null : Number(form.parent_id);
     try {
       if (modalState.isEdit) {
+        // parent_id is not part of UpdateDivisionRequest — moving uses the dedicated endpoint.
         await update(modalState.item.id, { name: form.name, status: form.status });
+        const currentParent = modalState.item.parent_id ?? null;
+        if (parentId !== currentParent) {
+          await move(modalState.item.id, parentId);
+        }
       } else {
-        await create({ app_id: appId, name: form.name });
+        const payload = { app_id: appId, name: form.name };
+        if (parentId != null) payload.parent_id = parentId;
+        await create(payload);
       }
     } catch (err) {
       showNotification(err.message, 'error');
@@ -394,6 +444,7 @@ function DivisionsSection({ appId }) {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>Parent</th>
                     <th>Path</th>
                     <th>Depth</th>
                     <th>Status</th>
@@ -406,6 +457,7 @@ function DivisionsSection({ appId }) {
                     <tr key={d.id}>
                       <td className="text-secondary">{d.id}</td>
                       <td className="fw-medium">{d.name}</td>
+                      <td className="text-secondary">{d.parent_id ? divName(d.parent_id) : '—'}</td>
                       <td className="text-secondary font-monospace small">{d.path}</td>
                       <td className="text-secondary">{d.depth}</td>
                       <td>
@@ -461,7 +513,14 @@ function DivisionsSection({ appId }) {
         onClose={closeModal}
         onSave={handleSave}
         initial={
-          modalState.item ? { name: modalState.item.name, status: modalState.item.status } : null
+          modalState.item
+            ? {
+                id: modalState.item.id,
+                name: modalState.item.name,
+                status: modalState.item.status,
+                parent_id: modalState.item.parent_id ?? '',
+              }
+            : null
         }
         isEdit={modalState.isEdit}
         divisions={divisions}
@@ -609,7 +668,9 @@ function UsersSection({ appId }) {
                         {u.firstname} {u.lastname}
                       </td>
                       <td className="text-secondary">{u.email}</td>
-                      <td className="text-secondary">{u.division_name || '—'}</td>
+                      <td className="text-secondary">
+                        {divisionLabel(u.division_id, divisions, u.division_name || '—')}
+                      </td>
                       <td>
                         <Badge color={u.role === 1 ? 'purple' : 'secondary'}>
                           {ROLE_LABEL[u.role] ?? u.role}
@@ -785,7 +846,7 @@ function GuestKeyModal({ isOpen, onClose, onSave, initial, isEdit, divisions, us
                 <option value="">Select division</option>
                 {divisions.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.name}
+                    {divisionLabel(d.id, divisions)}
                   </option>
                 ))}
               </Select>
@@ -837,7 +898,7 @@ function GuestKeysSection({ appId }) {
   const { divisions } = useDivisions(appId);
   const { users } = useUsers(appId);
 
-  const divName = (id) => divisions.find((d) => d.id === id)?.name || '—';
+  const divName = (id) => divisionLabel(id, divisions);
   const userName = (id) => {
     const u = users.find((x) => x.id === id);
     return u ? `${u.firstname} ${u.lastname}` : '—';

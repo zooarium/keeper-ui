@@ -1,2231 +1,2079 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "This is a microservice for user management.",
-        "title": "Keeper API",
-        "contact": {},
-        "version": "1.0"
-    },
-    "host": "localhost:8080",
-    "basePath": "/",
-    "paths": {
-        "/apps": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a microservice for user management.",
+    "title": "Keeper API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "paths": {
+    "/apps": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Get a list of all registered apps",
+        "produces": ["application/json"],
+        "tags": ["apps"],
+        "summary": "List all apps",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Max results (default 50, max 500)",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Result offset (default 0)",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/internal_app.App"
+                      }
                     }
-                ],
-                "description": "Get a list of all registered apps",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "apps"
-                ],
-                "summary": "List all apps",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max results (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Result offset (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_app.App"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
+                  }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new app with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "apps"
-                ],
-                "summary": "Create a new app",
-                "parameters": [
-                    {
-                        "description": "App details",
-                        "name": "app",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_app.CreateAppRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_app.App"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
+              ]
             }
-        },
-        "/apps/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a single app by its unique ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "apps"
-                ],
-                "summary": "Get app by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "App ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_app.App"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update an existing app's details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "apps"
-                ],
-                "summary": "Update app",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "App ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated app details",
-                        "name": "app",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_app.UpdateAppRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_app.App"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Remove an app from the system by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "apps"
-                ],
-                "summary": "Delete app",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "App ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
             }
-        },
-        "/divisions": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "List divisions for the caller's app. Filter by parent_id via query param.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "List divisions",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Filter by parent ID",
-                        "name": "parent_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Max results (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Result offset (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_division.Division"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new division with optional parent for hierarchical grouping",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "Create a new division",
-                "parameters": [
-                    {
-                        "description": "Division details",
-                        "name": "division",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_division.CreateDivisionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_division.Division"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
             }
-        },
-        "/divisions/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a single division by its ID (must belong to caller's app)",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "Get division by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Division ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_division.Division"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update name or status of an existing division",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "Update a division",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Division ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated division details",
-                        "name": "division",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_division.UpdateDivisionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_division.Division"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete a division. Blocked if it has children or assigned users.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "Delete a division",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Division ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/divisions/{id}/descendants": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Returns all divisions in the subtree rooted at the given division",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "Get all descendants of a division",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Division ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_division.Division"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/divisions/{id}/move": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Move a division (and its subtree) to a different parent. Set parent_id to null to promote to root.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "divisions"
-                ],
-                "summary": "Move a division to a new parent",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Division ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "New parent",
-                        "name": "move",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_division.MoveDivisionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_division.Division"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/guest-keys": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "List guest keys. Non-sysadmins only see keys for their own app.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "List guest keys",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max results (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Result offset (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_guestkey.GuestKey"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a publishable site key bound to an app/division and a designated guest user. Non-sysadmins can only create keys for their own app.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "Create a new guest key",
-                "parameters": [
-                    {
-                        "description": "Guest key details",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_guestkey.CreateGuestKeyRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_guestkey.GuestKey"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/guest-keys/auth": {
-            "post": {
-                "description": "Exchange a publishable site key for a short-lived tenant-scoped guest JWT (role=guest, signed with the guest secret)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "Exchange a site key for a guest token",
-                "parameters": [
-                    {
-                        "description": "Site key",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_guestkey.GuestAuthRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_guestkey.GuestAuthResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/guest-keys/lookup": {
-            "get": {
-                "description": "Resolve the publishable site key registered for the URL a UI is served from. Public (no auth) and hard rate-limited; returns only the site key, not tenant binding. The url is normalized (scheme/port stripped, host lowercased, host[+path]) and matched exactly.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "Look up a publishable site key by URL",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "URL the UI is served from (e.g. https://shop.acme.com or acme.com/store)",
-                        "name": "url",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_guestkey.SiteKeyLookupResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/guest-keys/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a single guest key by its unique ID. Non-sysadmins can only access keys of their own app.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "Get guest key by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Guest key ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_guestkey.GuestKey"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a guest key's name or status. Tenant binding and the site key are immutable. Non-sysadmins can only update keys of their own app.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "Update guest key",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Guest key ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Fields to update",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_guestkey.UpdateGuestKeyRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_guestkey.GuestKey"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete (revoke) a guest key. Non-sysadmins can only delete keys of their own app.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-keys"
-                ],
-                "summary": "Delete guest key",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Guest key ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/health": {
-            "get": {
-                "description": "Get the health status of the service",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "health"
-                ],
-                "summary": "Check service health",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/users": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a list of all users belonging to the caller's app",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "List all users",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max results (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Result offset (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_user.User"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new user with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Create a new user",
-                "parameters": [
-                    {
-                        "description": "User details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_user.CreateUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_user.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/auth": {
-            "post": {
-                "description": "Login with email and password to receive a JWT token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Authenticate user",
-                "parameters": [
-                    {
-                        "description": "Login credentials",
-                        "name": "credentials",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_user.AuthRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_user.AuthResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a single user by their unique ID (must belong to caller's app)",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_user.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update an existing user's details (must belong to caller's app)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Update user",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated user details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_user.UpdateUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/keeper_pkg_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_user.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Remove a user from the system by ID (must belong to caller's app)",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Delete user",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/keeper_pkg_render.Response"
-                        }
-                    }
-                }
-            }
+          }
         }
-    },
-    "definitions": {
-        "internal_app.About": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "description": "may contain HTML",
-                    "type": "string"
-                },
-                "heading": {
-                    "type": "string"
-                }
+      },
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Create a new app with the provided details",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["apps"],
+        "summary": "Create a new app",
+        "parameters": [
+          {
+            "description": "App details",
+            "name": "app",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_app.CreateAppRequest"
             }
-        },
-        "internal_app.AboutInput": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
                 },
-                "heading": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_app.Address": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "line1": {
-                    "type": "string"
-                },
-                "line2": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_app.AddressInput": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "line1": {
-                    "type": "string"
-                },
-                "line2": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_app.App": {
-            "type": "object",
-            "properties": {
-                "about": {
-                    "$ref": "#/definitions/internal_app.About"
-                },
-                "contact": {
-                    "$ref": "#/definitions/internal_app.Contact"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "logo_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "tagline": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_app.Contact": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "$ref": "#/definitions/internal_app.Address"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "hours": {
-                    "description": "free text",
-                    "type": "string"
-                },
-                "phone1": {
-                    "type": "string"
-                },
-                "phone2": {
-                    "type": "string"
-                },
-                "social": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_app.App"
                     }
+                  }
                 }
+              ]
             }
-        },
-        "internal_app.ContactInput": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "$ref": "#/definitions/internal_app.AddressInput"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "hours": {
-                    "type": "string"
-                },
-                "phone1": {
-                    "type": "string"
-                },
-                "phone2": {
-                    "type": "string"
-                },
-                "social": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
             }
-        },
-        "internal_app.CreateAppRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "about": {
-                    "$ref": "#/definitions/internal_app.AboutInput"
-                },
-                "contact": {
-                    "$ref": "#/definitions/internal_app.ContactInput"
-                },
-                "logo_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "tagline": {
-                    "type": "string"
-                }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
             }
-        },
-        "internal_app.UpdateAppRequest": {
-            "type": "object",
-            "properties": {
-                "about": {
-                    "$ref": "#/definitions/internal_app.AboutInput"
-                },
-                "contact": {
-                    "$ref": "#/definitions/internal_app.ContactInput"
-                },
-                "logo_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "tagline": {
-                    "type": "string"
-                }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
             }
-        },
-        "internal_division.CreateDivisionRequest": {
-            "type": "object",
-            "required": [
-                "app_id",
-                "name"
-            ],
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "parent_id": {
-                    "type": "integer"
-                }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
             }
-        },
-        "internal_division.Division": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "depth": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "parent_id": {
-                    "type": "integer"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_division.MoveDivisionRequest": {
-            "type": "object",
-            "properties": {
-                "parent_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_division.UpdateDivisionRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
-                }
-            }
-        },
-        "internal_guestkey.CreateGuestKeyRequest": {
-            "type": "object",
-            "required": [
-                "app_id",
-                "division_id",
-                "domain",
-                "name",
-                "user_id"
-            ],
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "domain": {
-                    "description": "Domain is the URL the publishable UI is served from. It is normalized\nserver-side (scheme/port stripped, host lowercased, host[+path]) and\nmust be unique — a public URL lookup resolves to exactly one site key.",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_guestkey.GuestAuthRequest": {
-            "type": "object",
-            "required": [
-                "site_key"
-            ],
-            "properties": {
-                "site_key": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_guestkey.GuestAuthResponse": {
-            "type": "object",
-            "properties": {
-                "expires_at": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_guestkey.GuestKey": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "domain": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "site_key": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_guestkey.SiteKeyLookupResponse": {
-            "type": "object",
-            "properties": {
-                "site_key": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_guestkey.UpdateGuestKeyRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_user.AuthRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_user.AuthResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/internal_user.User"
-                }
-            }
-        },
-        "internal_user.CreateUserRequest": {
-            "type": "object",
-            "required": [
-                "app_id",
-                "division_id",
-                "email",
-                "firstname",
-                "lastname",
-                "password"
-            ],
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "role": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_user.UpdateUserRequest": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "role": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_user.User": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "app_name": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "division_name": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "keeper_pkg_render.Response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "error": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                }
-            }
+          }
         }
+      }
     },
-    "securityDefinitions": {
-        "Bearer": {
-            "description": "Type \"Bearer\" followed by a space and JWT token.",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
+    "/apps/{id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Get a single app by its unique ID",
+        "produces": ["application/json"],
+        "tags": ["apps"],
+        "summary": "Get app by ID",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "App ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_app.App"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
         }
+      },
+      "put": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Update an existing app's details",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["apps"],
+        "summary": "Update app",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "App ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Updated app details",
+            "name": "app",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_app.UpdateAppRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_app.App"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Remove an app from the system by ID",
+        "produces": ["application/json"],
+        "tags": ["apps"],
+        "summary": "Delete app",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "App ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/divisions": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "List divisions for the caller's app. Filter by parent_id via query param.",
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "List divisions",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Filter by parent ID",
+            "name": "parent_id",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Max results (default 50, max 500)",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Result offset (default 0)",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/internal_division.Division"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Create a new division with optional parent for hierarchical grouping",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "Create a new division",
+        "parameters": [
+          {
+            "description": "Division details",
+            "name": "division",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_division.CreateDivisionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_division.Division"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/divisions/{id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Get a single division by its ID (must belong to caller's app)",
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "Get division by ID",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Division ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_division.Division"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Update name or status of an existing division",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "Update a division",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Division ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Updated division details",
+            "name": "division",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_division.UpdateDivisionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_division.Division"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Delete a division. Blocked if it has children or assigned users.",
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "Delete a division",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Division ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/divisions/{id}/descendants": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Returns all divisions in the subtree rooted at the given division",
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "Get all descendants of a division",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Division ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/internal_division.Division"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/divisions/{id}/move": {
+      "put": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Move a division (and its subtree) to a different parent. Set parent_id to null to promote to root.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["divisions"],
+        "summary": "Move a division to a new parent",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Division ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "New parent",
+            "name": "move",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_division.MoveDivisionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_division.Division"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/guest-keys": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "List guest keys. Non-sysadmins only see keys for their own app.",
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "List guest keys",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Max results (default 50, max 500)",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Result offset (default 0)",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/internal_guestkey.GuestKey"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Create a publishable site key bound to an app/division and a designated guest user. Non-sysadmins can only create keys for their own app.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "Create a new guest key",
+        "parameters": [
+          {
+            "description": "Guest key details",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_guestkey.CreateGuestKeyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_guestkey.GuestKey"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/guest-keys/auth": {
+      "post": {
+        "description": "Exchange a publishable site key for a short-lived tenant-scoped guest JWT (role=guest, signed with the guest secret)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "Exchange a site key for a guest token",
+        "parameters": [
+          {
+            "description": "Site key",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_guestkey.GuestAuthRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_guestkey.GuestAuthResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/guest-keys/lookup": {
+      "get": {
+        "description": "Resolve the publishable site key registered for the URL a UI is served from. Public (no auth) and hard rate-limited; returns only the site key, not tenant binding. The url is normalized (scheme/port stripped, host lowercased, host[+path]) and matched exactly.",
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "Look up a publishable site key by URL",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "URL the UI is served from (e.g. https://shop.acme.com or acme.com/store)",
+            "name": "url",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_guestkey.SiteKeyLookupResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/guest-keys/{id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Get a single guest key by its unique ID. Non-sysadmins can only access keys of their own app.",
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "Get guest key by ID",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Guest key ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_guestkey.GuestKey"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Update a guest key's name or status. Tenant binding and the site key are immutable. Non-sysadmins can only update keys of their own app.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "Update guest key",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Guest key ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Fields to update",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_guestkey.UpdateGuestKeyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_guestkey.GuestKey"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Delete (revoke) a guest key. Non-sysadmins can only delete keys of their own app.",
+        "produces": ["application/json"],
+        "tags": ["guest-keys"],
+        "summary": "Delete guest key",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Guest key ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Get the health status of the service",
+        "produces": ["application/json"],
+        "tags": ["health"],
+        "summary": "Check service health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Get a list of all users belonging to the caller's app",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "List all users",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Max results (default 50, max 500)",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Result offset (default 0)",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/internal_user.User"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Create a new user with the provided details",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Create a new user",
+        "parameters": [
+          {
+            "description": "User details",
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_user.CreateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_user.User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/auth": {
+      "post": {
+        "description": "Login with email and password to receive a JWT token",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Authenticate user",
+        "parameters": [
+          {
+            "description": "Login credentials",
+            "name": "credentials",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_user.AuthRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_user.AuthResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Get a single user by their unique ID (must belong to caller's app)",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_user.User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Update an existing user's details (must belong to caller's app)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Update user",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Updated user details",
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/internal_user.UpdateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/keeper_pkg_render.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/internal_user.User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Remove a user from the system by ID (must belong to caller's app)",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Delete user",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/keeper_pkg_render.Response"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "internal_app.About": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "description": "may contain HTML",
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_app.AboutInput": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_app.Address": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "line1": {
+          "type": "string"
+        },
+        "line2": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_app.AddressInput": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "line1": {
+          "type": "string"
+        },
+        "line2": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_app.App": {
+      "type": "object",
+      "properties": {
+        "about": {
+          "$ref": "#/definitions/internal_app.About"
+        },
+        "contact": {
+          "$ref": "#/definitions/internal_app.Contact"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "tagline": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_app.Contact": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/internal_app.Address"
+        },
+        "email": {
+          "type": "string"
+        },
+        "hours": {
+          "description": "free text",
+          "type": "string"
+        },
+        "phone1": {
+          "type": "string"
+        },
+        "phone2": {
+          "type": "string"
+        },
+        "social": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "internal_app.ContactInput": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/internal_app.AddressInput"
+        },
+        "email": {
+          "type": "string"
+        },
+        "hours": {
+          "type": "string"
+        },
+        "phone1": {
+          "type": "string"
+        },
+        "phone2": {
+          "type": "string"
+        },
+        "social": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "internal_app.CreateAppRequest": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "about": {
+          "$ref": "#/definitions/internal_app.AboutInput"
+        },
+        "contact": {
+          "$ref": "#/definitions/internal_app.ContactInput"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "tagline": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_app.UpdateAppRequest": {
+      "type": "object",
+      "properties": {
+        "about": {
+          "$ref": "#/definitions/internal_app.AboutInput"
+        },
+        "contact": {
+          "$ref": "#/definitions/internal_app.ContactInput"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "tagline": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_division.CreateDivisionRequest": {
+      "type": "object",
+      "required": ["app_id", "name"],
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "parent_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_division.Division": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "depth": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_division.MoveDivisionRequest": {
+      "type": "object",
+      "properties": {
+        "parent_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_division.UpdateDivisionRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "integer",
+          "enum": [0, 1]
+        }
+      }
+    },
+    "internal_guestkey.CreateGuestKeyRequest": {
+      "type": "object",
+      "required": ["app_id", "division_id", "domain", "name", "user_id"],
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "division_id": {
+          "type": "integer"
+        },
+        "domain": {
+          "description": "Domain is the URL the publishable UI is served from. It is normalized\nserver-side (scheme/port stripped, host lowercased, host[+path]) and\nmust be unique — a public URL lookup resolves to exactly one site key.",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_guestkey.GuestAuthRequest": {
+      "type": "object",
+      "required": ["site_key"],
+      "properties": {
+        "site_key": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_guestkey.GuestAuthResponse": {
+      "type": "object",
+      "properties": {
+        "expires_at": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_guestkey.GuestKey": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "division_id": {
+          "type": "integer"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "site_key": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_guestkey.SiteKeyLookupResponse": {
+      "type": "object",
+      "properties": {
+        "site_key": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_guestkey.UpdateGuestKeyRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_user.AuthRequest": {
+      "type": "object",
+      "required": ["email", "password"],
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "internal_user.AuthResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/internal_user.User"
+        }
+      }
+    },
+    "internal_user.CreateUserRequest": {
+      "type": "object",
+      "required": ["app_id", "division_id", "email", "firstname", "lastname", "password"],
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "division_id": {
+          "type": "integer"
+        },
+        "email": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8
+        },
+        "role": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_user.UpdateUserRequest": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "division_id": {
+          "type": "integer"
+        },
+        "email": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8
+        },
+        "role": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "integer"
+        }
+      }
+    },
+    "internal_user.User": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "integer"
+        },
+        "app_name": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "division_id": {
+          "type": "integer"
+        },
+        "division_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "role": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "keeper_pkg_render.Response": {
+      "type": "object",
+      "properties": {
+        "data": {},
+        "error": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "description": "Type \"Bearer\" followed by a space and JWT token.",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
 }

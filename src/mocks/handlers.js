@@ -119,6 +119,56 @@ export const handlers = [
 
   http.delete('*/things/:id', () => new HttpResponse(null, { status: 204 })),
 
+  // --- Divisions ---
+  http.get('*/divisions', () =>
+    HttpResponse.json({
+      data: [
+        {
+          id: 1,
+          app_id: 1,
+          name: 'Headquarters',
+          parent_id: 0,
+          path: '1',
+          depth: 0,
+          status: 1,
+          created_at: '2026-01-01T00:00:00Z',
+          updated_at: '2026-01-01T00:00:00Z',
+        },
+        {
+          id: 2,
+          app_id: 1,
+          name: 'Sales',
+          parent_id: 1,
+          path: '1.2',
+          depth: 1,
+          status: 1,
+          created_at: '2026-01-01T00:00:00Z',
+          updated_at: '2026-01-01T00:00:00Z',
+        },
+      ],
+    })
+  ),
+
+  http.post('*/divisions', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json(
+      { data: { id: Date.now(), depth: 0, path: '', ...body } },
+      { status: 201 }
+    );
+  }),
+
+  http.put('*/divisions/:id/move', async ({ params, request }) => {
+    const body = await request.json();
+    return HttpResponse.json({ data: { id: Number(params.id), parent_id: body.parent_id } });
+  }),
+
+  http.put('*/divisions/:id', async ({ params, request }) => {
+    const body = await request.json();
+    return HttpResponse.json({ data: { id: Number(params.id), ...body } });
+  }),
+
+  http.delete('*/divisions/:id', () => new HttpResponse(null, { status: 204 })),
+
   // --- Guest Keys ---
   http.get('*/guest-keys', () =>
     HttpResponse.json({

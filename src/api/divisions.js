@@ -15,3 +15,10 @@ export function updateDivision(id, payload) {
 export function deleteDivision(id) {
   return apiRequest(`/divisions/${id}`, { method: 'DELETE' });
 }
+
+export function moveDivision(id, parentId) {
+  return apiRequest(`/divisions/${id}/move`, {
+    method: 'PUT',
+    body: JSON.stringify({ parent_id: parentId }),
+  });
+}

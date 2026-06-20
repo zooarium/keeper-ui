@@ -21,12 +21,15 @@ import {
   IconEdit,
   IconTrash,
   IconArrowLeft,
+  IconLogin2,
   useNotification,
 } from '@aviary-ui/ui';
+import { storage } from '@aviary-ui/core';
 import { useApp, APPS_KEY } from '@/hooks/useApps';
 import { useDivisions } from '@/hooks/useDivisions';
 import { useUsers } from '@/hooks/useUsers';
 import { useGuestKeys } from '@/hooks/useGuestKeys';
+import { fetchImpersonationServices, launchImpersonation } from '@/api/impersonation';
 import AppForm from '@/components/AppForm';
 import { NAV_ITEMS } from '@/config/nav';
 
@@ -552,6 +555,30 @@ function UsersSection({ appId }) {
     onConfirm: () => {},
   });
 
+  // Impersonation ("login as user") is sysadmin-only. The service registry is
+  // fetched from keeper so the picker knows where to hand off the one-time code.
+  const currentUser = storage.getUser();
+  const canImpersonate = currentUser?.role === 1;
+  const [impServices, setImpServices] = useState([]);
+  const [impState, setImpState] = useState({ isOpen: false, user: null });
+
+  useEffect(() => {
+    if (!canImpersonate) return;
+    fetchImpersonationServices()
+      .then(setImpServices)
+      .catch(() => {});
+  }, [canImpersonate]);
+
+  const handleLaunchImpersonation = async (service) => {
+    try {
+      await launchImpersonation({ targetUserId: impState.user.id, service });
+      showNotification(`Opened ${service.key} as ${impState.user.email} in a new tab.`, 'success');
+      setImpState({ isOpen: false, user: null });
+    } catch (err) {
+      showNotification(err.message, 'error');
+    }
+  };
+
   const filtered = users.filter((u) => {
     if (!nameFilter) return true;
     const full = `${u.firstname} ${u.lastname} ${u.email}`.toLowerCase();
@@ -684,6 +711,17 @@ function UsersSection({ appId }) {
                       <td className="text-secondary">{formatDateShort(u.created_at)}</td>
                       <td>
                         <div className="d-flex gap-1 justify-content-end">
+                          {canImpersonate && u.role !== 1 && impServices.length > 0 && (
+                            <Button
+                              variant="ghost-secondary"
+                              size="sm"
+                              icon
+                              onClick={() => setImpState({ isOpen: true, user: u })}
+                              title="Login as this user"
+                            >
+                              <IconLogin2 size={15} />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost-primary"
                             size="sm"
@@ -739,6 +777,25 @@ function UsersSection({ appId }) {
         onConfirm={confirmState.onConfirm}
         onCancel={() => setConfirmState((p) => ({ ...p, isOpen: false }))}
       />
+
+      <Modal
+        isOpen={impState.isOpen}
+        onClose={() => setImpState({ isOpen: false, user: null })}
+        title={impState.user ? `Login as ${impState.user.firstname} ${impState.user.lastname}` : 'Login as user'}
+      >
+        <p className="text-secondary">
+          Open a session as <strong>{impState.user?.email}</strong> in the selected
+          application. It opens in a new tab; your admin session stays active here.
+        </p>
+        <div className="d-flex flex-column gap-2">
+          {impServices.map((svc) => (
+            <Button key={svc.key} variant="outline-primary" onClick={() => handleLaunchImpersonation(svc)}>
+              <IconLogin2 size={16} className="me-2" />
+              {svc.key}
+            </Button>
+          ))}
+        </div>
+      </Modal>
     </>
   );
 }
